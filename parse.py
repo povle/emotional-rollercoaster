@@ -36,29 +36,25 @@ def parse_ds(ds: str) -> datetime.datetime:
 
 
 def parse_message(msg: re.Match, sender=None):
-    try:
-        if msg.group('sender_is_self'):
-            sender_id = 'self'
-        else:
-            sender_id = msg.group('sender_id')
-            if msg.group('sender_type') != 'id':
-                sender_id = '-' + sender_id
+    if msg.group('sender_is_self'):
+        sender_id = 'self'
+    else:
+        sender_id = msg.group('sender_id')
+        if msg.group('sender_type') != 'id':
+            sender_id = '-' + sender_id
 
-        if sender is not None and sender_id != str(sender):
-            return None
+    if sender is not None and sender_id != str(sender):
+        return None
 
-        text = msg.group('text')
-        if not text:
-            return None
+    text = msg.group('text')
+    if not text:
+        return None
 
-        text = html.unescape(text).replace('<br>', '\n')
+    text = html.unescape(text).replace('<br>', '\n')
 
-        return {'text': text,
-                'timestamp': int(parse_ds(msg.group('date')).timestamp()),
-                'sender': sender_id}
-    except Exception:
-        print(msg.group(0))
-        raise
+    return {'text': text,
+            'timestamp': int(parse_ds(msg.group('date')).timestamp()),
+            'sender': sender_id}
 
 
 @click.command()
@@ -83,7 +79,7 @@ def parse_messages(data_folder_path: Path,
             try:
                 parsed = parse_message(msg, sender=sender)
             except Exception:
-                print (msg.group(0))
+                print(msg.group(0))
                 raise
             if parsed is not None:
                 parsed['peer_id'] = _peer_id

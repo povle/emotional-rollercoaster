@@ -84,8 +84,6 @@ def parse_messages(data_folder_path: Path,
         message_list = soup.findAll(class_='item')
 
         _peer_id = path.parts[-2]
-        if '-' in _peer_id:
-            continue # пока не работают диалоги с сообществами
 
         for msg in message_list:
             parsed = parse_message(msg, sender=sender)

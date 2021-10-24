@@ -43,7 +43,7 @@ def parse_message(msg, sender=None):
         try:
             r = re.search(r'(id|public|club)(\d+)"', str(header[0]))
             sender_id = r.group(2)
-            if r.group(1) == 'public':
+            if r.group(1) != 'id':
                 sender_id = '-' + sender_id
         except Exception:
             print(str(msg))

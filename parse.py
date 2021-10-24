@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-import click, datetime, bs4, re, json, cchardet
+import click, datetime, re, json, html
 from tqdm import tqdm
-from bs4 import BeautifulSoup
 from pathlib import Path
 
+MESSAGE_RE = re.compile(r'<div class="message__header">'
+                        r'(<a href="https://vk.com/(?P<sender_type>id|public|club)(?P<sender_id>\d+)">.+</a>)?'
+                        r'(?P<sender_is_self>Вы)?'
+                        r', (?P<date>.+?:\d\d:\d\d).*</div>\n'
+                        r'  <div>(?P<text>.*)<div class="kludges">', re.MULTILINE)
 
 MONTHS = {'янв': '01',
           'фев': '02',
@@ -19,9 +23,7 @@ MONTHS = {'янв': '01',
           'дек': '12'}
 
 
-def parse_header(header: str) -> datetime.datetime:
-    ds = header.replace('Вы', '')
-    ds = ds.replace(', ', '')
+def parse_ds(ds: str) -> datetime.datetime:
     for month in MONTHS:
         if month in ds:
             ds = ds.replace(month, MONTHS[month])
@@ -33,35 +35,30 @@ def parse_header(header: str) -> datetime.datetime:
     return datetime.datetime.strptime(ds, '%d %m %Y в %X')
 
 
-def parse_message(msg, sender=None):
-    header = msg.find(class_='message__header').contents
-    if isinstance(header[0], bs4.element.NavigableString):
-        dt_header = header[0]
-        sender_id = 'self'
-    else:
-        dt_header = header[1]
-        try:
-            r = re.search(r'(id|public|club)(\d+)"', str(header[0]))
-            sender_id = r.group(2)
-            if r.group(1) != 'id':
+def parse_message(msg: re.Match, sender=None):
+    try:
+        if msg.group('sender_is_self'):
+            sender_id = 'self'
+        else:
+            sender_id = msg.group('sender_id')
+            if msg.group('sender_type') != 'id':
                 sender_id = '-' + sender_id
-        except Exception:
-            print(str(msg))
-            raise
 
-    if sender is not None and sender_id != str(sender):
-        return None
+        if sender is not None and sender_id != str(sender):
+            return None
 
-    kludges = msg.find(class_='kludges')
-    if kludges is None:
-        return None
+        text = msg.group('text')
+        if not text:
+            return None
 
-    if not isinstance(kludges.parent.contents[0], bs4.element.NavigableString):
-        return None
+        text = html.unescape(text).replace('<br>', '\n')
 
-    return {'text': kludges.parent.contents[0],
-            'timestamp': int(parse_header(dt_header).timestamp()),
-            'sender': sender_id}
+        return {'text': text,
+                'timestamp': int(parse_ds(msg.group('date')).timestamp()),
+                'sender': sender_id}
+    except Exception:
+        print(msg.group(0))
+        raise
 
 
 @click.command()
@@ -79,14 +76,15 @@ def parse_messages(data_folder_path: Path,
 
     for n, path in enumerate(tqdm(list(data_folder_path.glob(f'{peer_id}/*.html')))):
         with open(path, encoding='windows-1251') as f:
-            soup = BeautifulSoup(f, 'lxml')
-
-        message_list = soup.findAll(class_='item')
-
+            full_text = f.read()
         _peer_id = path.parts[-2]
 
-        for msg in message_list:
-            parsed = parse_message(msg, sender=sender)
+        for msg in re.finditer(MESSAGE_RE, full_text):
+            try:
+                parsed = parse_message(msg, sender=sender)
+            except Exception:
+                print (msg.group(0))
+                raise
             if parsed is not None:
                 parsed['peer_id'] = _peer_id
                 data.append(parsed)

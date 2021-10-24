@@ -26,9 +26,10 @@ model = FastTextSocialNetworkModel(tokenizer=RegexTokenizer())
 @click.command()
 @click.argument('data_path', type=click.Path(dir_okay=False, path_type=Path))
 @click.argument('save_path', type=click.Path(dir_okay=False, path_type=Path))
-def score(data_path: Path, save_path: Path):
+@click.option('-s', '--sender', help='id отправителя сообщения, например 12345 или -12345 для сообществ. Для анализа только собственных сообщений -s self')
+def score(data_path: Path, save_path: Path, sender: str = None):
     with data_path.open() as f:
-        messages = json.load(f)
+        messages = [x for x in json.load(f) if sender is None or x['sender'] == sender]
 
     scores = {}
     for msg in tqdm(messages):

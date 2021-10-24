@@ -67,7 +67,7 @@ def parse_message(msg, sender=None):
 @click.command()
 @click.argument('data_folder_path', type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.argument('save_file_path', type=click.Path(dir_okay=False, path_type=Path))
-@click.option('-s', '--sender', help='id отправителя сообщения, например 12345 или -12345 для сообществ')
+@click.option('-s', '--sender', help='id отправителя сообщения, например 12345 или -12345 для сообществ. Для сохранения только собственных сообщений -s self')
 @click.option('-f', '--save_freq', type=int, help='частота сохранения файла (если не установлена то файл сохраняется только после обработки всех сообщений)')
 @click.option('-p', '--peer_id', default='*', help='id беседы сообщения, для личных диалогов равен id другого человека')
 def parse_messages(data_folder_path: Path,

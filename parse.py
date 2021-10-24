@@ -41,7 +41,7 @@ def parse_message(msg, sender=None):
     else:
         dt_header = header[1]
         try:
-            r = re.search(r'(id|public)(\d+)"', str(header[0]))
+            r = re.search(r'(id|public|club)(\d+)"', str(header[0]))
             sender_id = r.group(2)
             if r.group(1) == 'public':
                 sender_id = '-' + sender_id

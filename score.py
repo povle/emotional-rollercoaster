@@ -28,7 +28,7 @@ model = FastTextSocialNetworkModel(tokenizer=RegexTokenizer())
 @click.argument('save_path', type=click.Path(dir_okay=False, path_type=Path))
 @click.option('-s', '--sender', help='id отправителя сообщения, например 12345 или -12345 для сообществ. Для анализа только собственных сообщений -s self')
 def score(data_path: Path, save_path: Path, sender: str = None):
-    with data_path.open() as f:
+    with data_path.open(encoding='utf8') as f:
         messages = [x for x in json.load(f) if sender is None or x['sender'] == sender]
 
     scores = {}
@@ -37,7 +37,7 @@ def score(data_path: Path, save_path: Path, sender: str = None):
         results = model.predict([msg['text']], k=-1)
         scores[ts] = results[0]['positive'] - results[0]['negative']
 
-    with save_path.open('w') as f:
+    with save_path.open('w', encoding='utf8') as f:
         for ts in sorted(scores):
             f.write(f'{ts},{scores[ts]}\n')
 

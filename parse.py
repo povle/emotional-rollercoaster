@@ -73,11 +73,11 @@ def parse_messages(data_folder_path: Path,
                 data.append(parsed)
 
         if (save_freq is not None) and (save_file_path is not None) and (n % save_freq == 0):
-            with save_file_path.open('w') as f:
+            with save_file_path.open('w', encoding='utf8') as f:
                 json.dump(data, f, ensure_ascii=False)
 
     if save_file_path is not None:
-        with save_file_path.open('w') as f:
+        with save_file_path.open('w', encoding='utf8') as f:
             json.dump(data, f, ensure_ascii=False)
 
     return data

@@ -2,7 +2,7 @@
 ## Требования
 Тестировалось на Python 3.9.7, вероятно будет работать на 3.7 и выше. Установка необходимых библиотек:
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Выгрузка сообщений

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+import orjson as json
 import os
 import click
 from tqdm import tqdm
@@ -29,7 +29,7 @@ model = FastTextSocialNetworkModel(tokenizer=RegexTokenizer())
 @click.option('-s', '--sender', help='id отправителя сообщения, например 12345 или -12345 для сообществ. Для анализа только собственных сообщений -s self')
 def score(data_path: Path, save_path: Path, sender: str = None):
     with data_path.open(encoding='utf8') as f:
-        messages = [x for x in json.load(f) if sender is None or x['sender'] == sender]
+        messages = [x for x in json.loads(f.read()) if sender is None or x['sender'] == sender]
 
     scores = {}
     for msg in tqdm(messages):

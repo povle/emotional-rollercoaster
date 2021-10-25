@@ -8,6 +8,7 @@ kiwisolver==1.3.2
 matplotlib==3.4.3
 mccabe==0.6.1
 numpy==1.21.3
+orjson==3.6.4
 Pillow==8.4.0
 pybind11==2.8.0
 pycodestyle==2.8.0

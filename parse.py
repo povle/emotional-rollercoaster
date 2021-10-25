@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import click, datetime, re, json, html
+import click, datetime, re, html
+import orjson as json
 from tqdm import tqdm
 from pathlib import Path
 
@@ -73,12 +74,12 @@ def parse_messages(data_folder_path: Path,
                 data.append(parsed)
 
         if (save_freq is not None) and (save_file_path is not None) and (n % save_freq == 0):
-            with save_file_path.open('w', encoding='utf8') as f:
-                json.dump(data, f, ensure_ascii=False)
+            with save_file_path.open('wb') as f:
+                f.write(json.dumps(data))
 
     if save_file_path is not None:
-        with save_file_path.open('w', encoding='utf8') as f:
-            json.dump(data, f, ensure_ascii=False)
+        with save_file_path.open('wb') as f:
+            f.write(json.dumps(data))
 
     return data
 

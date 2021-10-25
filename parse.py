@@ -6,33 +6,20 @@ from pathlib import Path
 MESSAGE_RE = re.compile(r'<div class="message__header">'
                         r'(<a href="https://vk.com/(?P<sender_type>id|public|club)(?P<sender_id>\d+)">.+</a>)?'
                         r'(?P<sender_is_self>Вы)?'
-                        r', (?P<date>.+?:\d\d:\d\d).*</div>\n'
+                        r', (?P<day>\d?\d) (?P<month>[а-я]{3}) (?P<year>\d{4}) в (?P<hour>\d\d):(?P<minute>\d\d):(?P<second>\d\d).*</div>\n'
                         r'  <div>(?P<text>.*)<div class="kludges">', re.MULTILINE)
 
-MONTHS = {'янв': '01',
-          'фев': '02',
-          'мар': '03',
-          'апр': '04',
-          'мая': '05',
-          'июн': '06',
-          'июл': '07',
-          'авг': '08',
-          'сен': '09',
-          'окт': '10',
-          'ноя': '11',
-          'дек': '12'}
+MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
 
 
-def parse_ds(ds: str) -> datetime.datetime:
-    for month in MONTHS:
-        if month in ds:
-            ds = ds.replace(month, MONTHS[month])
-            break
-
-    if len(ds.split()[0]) == 1:
-        ds = '0' + ds
-
-    return datetime.datetime.strptime(ds, '%d %m %Y в %X')
+def parse_ds(msg: re.Match) -> datetime.datetime:
+    year = int(msg.group('year'))
+    month = MONTHS.index(msg.group('month'))+1
+    day = int(msg.group('day'))
+    hour = int(msg.group('hour'))
+    minute = int(msg.group('minute'))
+    second = int(msg.group('second'))
+    return datetime.datetime(year, month, day, hour, minute, second)
 
 
 def parse_message(msg: re.Match, sender=None):
@@ -53,7 +40,7 @@ def parse_message(msg: re.Match, sender=None):
     text = html.unescape(text).replace('<br>', '\n')
 
     return {'text': text,
-            'timestamp': int(parse_ds(msg.group('date')).timestamp()),
+            'timestamp': int(parse_ds(msg).timestamp()),
             'sender': sender_id}
 
 

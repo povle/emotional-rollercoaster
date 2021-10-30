@@ -53,7 +53,8 @@ SCORE = {'positive': score_positivity, 'toxic': score_toxicity}
 @click.argument('save_path', type=click.Path(dir_okay=False, path_type=Path))
 @click.option('-p',
               '--peer_id',
-              help='id беседы сообщения, для личных диалогов равен id другого человека.')
+              help='id беседы сообщения, для личных диалогов равен id другого человека. '
+                   'Для групповых чатов можно вводить id как в ссылке, например c31')
 @click.option('-s',
               '--sender',
               default='self',
@@ -68,6 +69,10 @@ SCORE = {'positive': score_positivity, 'toxic': score_toxicity}
                    'По умолчанию positive - определяет позитивность сообщений. '
                    'toxic определяет токсичность.')
 def score(data_path: Path, save_path: Path, peer_id: str = None, sender='self', model='positive'):
+    # для диалогов
+    if peer_id and peer_id.startswith('c'):
+        peer_id = str(int(peer_id[1:])+2000000000)
+
     with data_path.open(encoding='utf8') as f:
         messages = [x for x in json.loads(f.read())
                     if (sender == 'all' or x['sender'] == sender)

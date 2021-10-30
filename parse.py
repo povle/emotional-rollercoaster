@@ -56,6 +56,10 @@ def parse_messages(data_folder_path: Path,
                    sender=None,
                    save_freq: int = None,
                    peer_id='*'):
+    # для диалогов
+    if peer_id and peer_id.startswith('c'):
+        peer_id = str(int(peer_id[1:])+2000000000)
+
     data = []
 
     for n, path in enumerate(tqdm(list(data_folder_path.glob(f'{peer_id}/*.html')))):

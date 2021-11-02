@@ -87,11 +87,11 @@ def score(data_path: Path, save_path: Path, peer_id: str = None, sender='self', 
     scores = {}
     for msg in tqdm(messages):
         ts = msg['timestamp']
-        scores[ts] = predict(msg['text'])
+        scores[ts] = [str(predict(msg['text'])), str(msg['peer_id']), str(msg['sender'])] # TBD: переделать костыль
 
     with save_path.open('w', encoding='utf8') as f:
         for ts in sorted(scores):
-            f.write(f'{ts},{scores[ts]}\n')
+            f.write(f"{ts},{', '.join(scores[ts])}\n") # TBD: переделать костыль
 
 
 if __name__ == '__main__':

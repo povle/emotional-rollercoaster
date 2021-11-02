@@ -18,7 +18,7 @@ def plot_moving_average(data_path: Path, width: int):
     raw_y = []
     with data_path.open() as f:
         for line in f:
-            a, b = line.split(',')
+            a, b, c, d = line.split(',')
             raw_x.append(int(a))
             raw_y.append(float(b))
 

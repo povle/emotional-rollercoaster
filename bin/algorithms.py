@@ -20,12 +20,16 @@ def prepare_data(file_path, group_by=True):
     return df
 
 # Rolling mean of sentiment and datetime
-def moving_average(df, window_size, grouped=True):
+def moving_average(df, window_size):
     # Create new dataframe with rolling mean of sentiment
-    if grouped:
-        df_rolling = df.rolling(window=window_size).mean().dropna(axis=0, how='all')
-    else:
-        df_rolling[['datetime', 'sentiment']] = df['datetime', 'sentiment'].rolling(window=window_size).mean().dropna(axis=0, how='all')
-        
+    df_rolling = df.rolling(window=window_size).mean().dropna(axis=0, how='all')
     # Return dataframe
     return df_rolling
+
+# Exponential moving average of sentiment and datetime
+def exponential_moving_average(df, window_size):
+    # Create new dataframe with exponential moving average of sentiment
+    df_ema = df.ewm(span=window_size).mean().dropna(axis=0, how='all')
+    # Return dataframe
+    return df_ema
+

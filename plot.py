@@ -23,7 +23,7 @@ def plot_moving_average(data_paths: Tuple[Path], width: int):
 
     for data_path in data_paths:
         df = load_scores(data_path)
-        ax = df.rolling(width).mean().plot(ax=ax, legend=False)
+        df.rolling(width).mean().plot(ax=ax, legend=False)
 
     if single:
         plt.axhline(y=df['score'].mean(), color='r')

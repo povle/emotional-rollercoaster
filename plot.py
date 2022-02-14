@@ -14,8 +14,8 @@ def load_scores(path: Path) -> pd.DataFrame:
 
 @click.command()
 @click.argument('data_paths', nargs=-1, type=click.Path(exists=True, dir_okay=False, path_type=Path))
-@click.option('-w', '--width', type=int, default=5000)
-def plot_moving_average(data_paths: Tuple[Path], width: int):
+@click.option('-w', '--width', default='30D')
+def plot_moving_average(data_paths: Tuple[Path], width: str):
     single = len(data_paths) == 1
 
     ax = plt.gca()

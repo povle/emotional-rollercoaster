@@ -7,7 +7,7 @@ from pathlib import Path
 MESSAGE_RE = re.compile(r'<div class="message__header">'
                         r'(<a href="https://vk.com/(?P<sender_type>id|public|club)(?P<sender_id>\d+)">.+</a>)?'
                         r'(?P<sender_is_self>Вы)?'
-                        r', (?P<day>\d?\d) (?P<month>[а-я]{3}) (?P<year>\d{4}) в (?P<hour>\d\d):(?P<minute>\d\d):(?P<second>\d\d).*</div>\n'
+                        r', (?P<day>\d?\d) (?P<month>[а-я]{3}) (?P<year>\d{4}) в (?P<hour>\d?\d):(?P<minute>\d\d):(?P<second>\d\d).*</div>\n'
                         r'  <div>(?P<text>.*)<div class="kludges">', re.MULTILINE)
 
 MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
